@@ -1,0 +1,96 @@
+{
+    "dashboard": {
+        "title": "Dashboard",
+        "welcome": "Welcome",
+        "settings": "Settings",
+        "language": {
+            "title": "Language",
+            "fr": "French",
+            "en": "English"
+        }
+    },
+    "appearance": {
+        "title": "Appearance",
+        "settings": "Appearance settings",
+        "description": "Update your account's appearance settings."
+    },
+    "password": {
+        "title": "Password",
+        "settings": "Password settings",
+        "update": "Update password",
+        "description": "Ensure your account is using a long, random password to stay secure.",
+        "current": "Current password",
+        "new": "New password",
+        "confirmation": "Confirm password",
+        "save": "Save",
+        "saved": "Password updated.",
+        "reset_link": "Email password reset link"
+    },
+    "auth": {
+        "login": {
+            "title": "Login",
+            "description": "Enter your email and password below to log in.",
+            "email": "Email address",
+            "password": "Password",
+            "remember": "Remember me",
+            "forgot": "Forgot password?",
+            "button": "Log in",
+            "no_account": "Don't have an account?",
+            "signup": "Sign up"
+        },
+        "register": {
+            "title": "Create an account",
+            "description": "Enter your details below to create your account.",
+            "name": "Full name",
+            "email": "Email address",
+            "password": "Password",
+            "password_confirmation": "Confirm password",
+            "button": "Create account",
+            "already_account": "Already have an account?",
+            "login": "Log in"
+        },
+        "forgot": {
+            "title": "Forgot password",
+            "description": "Enter your email to receive a password reset link.",
+            "email": "Email address",
+            "button": "Email password reset link",
+            "return": "Or, return to",
+            "login": "log in"
+        },
+        "reset": {
+            "title": "Reset password",
+            "description": "Please enter your new password below.",
+            "email": "Email address",
+            "password": "Password",
+            "password_confirmation": "Confirm password",
+            "button": "Reset password"
+        },
+        "confirm": {
+            "title": "Confirm password",
+            "description": "This is a secure area of the application. Please confirm your password before continuing.",
+            "password": "Password",
+            "button": "Confirm Password"
+        },
+        "verify": {
+            "title": "Email verification",
+            "description": "Please verify your email address by clicking on the link we just emailed to you.",
+            "resent": "A new verification link has been sent to your email address.",
+            "button": "Resend verification email",
+            "logout": "Log out"
+        }
+    },
+    "profile": {
+        "title": "Profile settings",
+        "heading": "Profile information",
+        "description": "Update your name and email address",
+        "name": "Name",
+        "email": "Email address",
+        "save": "Save",
+        "saved": "Saved.",
+        "verification": {
+            "unverified": "Your email address is unverified.",
+            "resend": "Click here to resend the verification email.",
+            "sent": "A new verification link has been sent to your email address."
+        }
+    }
+}
