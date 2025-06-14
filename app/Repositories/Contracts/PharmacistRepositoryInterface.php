@@ -5,7 +5,7 @@ namespace App\Repositories\Contracts;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-interface CategoryRepositoryInterface
+interface PharmacistRepositoryInterface
 {
     public function all(): Collection;
     public function paginate(int $perPage = 10, array $relations = []): LengthAwarePaginator;

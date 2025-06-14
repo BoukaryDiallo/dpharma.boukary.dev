@@ -40,6 +40,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Configuration de la pagination par défaut
+        \Illuminate\Pagination\Paginator::useBootstrapFive();
+        
+        // Définir la locale de l'application
+        \Carbon\Carbon::setLocale(config('app.locale'));
+        
+        // Valider les numéros de téléphone
+        \Illuminate\Support\Facades\Validator::extend('phone', function($attribute, $value, $parameters, $validator) {
+            return preg_match('/^[0-9+\-\s]+$/', $value);
+        });
     }
 }

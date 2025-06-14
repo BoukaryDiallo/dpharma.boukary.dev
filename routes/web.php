@@ -13,12 +13,12 @@ use App\Http\Controllers\PharmaceuticalProduct\ToggleStatusController as Pharmac
 use App\Http\Controllers\PharmaceuticalProduct\PharmaceuticalProductDestroyController;
 
 // Contrôleurs pour la gestion des pharmaciens
-use App\Http\Controllers\Pharmacist\IndexController as PharmacistIndexController;
-use App\Http\Controllers\Pharmacist\CreateController as PharmacistCreateController;
-use App\Http\Controllers\Pharmacist\ShowController as PharmacistShowController;
-use App\Http\Controllers\Pharmacist\EditController as PharmacistEditController;
-use App\Http\Controllers\Pharmacist\DeleteController as PharmacistDeleteController;
-use App\Http\Controllers\Pharmacist\ToggleStatusController as PharmacistToggleStatusController;
+use App\Http\Controllers\Pharmacist\PharmacistIndexController;
+use App\Http\Controllers\Pharmacist\PharmacistCreateController;
+use App\Http\Controllers\Pharmacist\PharmacistShowController;
+use App\Http\Controllers\Pharmacist\PharmacistEditController;
+use App\Http\Controllers\Pharmacist\PharmacistDeleteController;
+use App\Http\Controllers\Pharmacist\PharmacistToggleStatusController;
 
 // Contrôleurs pour les clients
 use App\Http\Controllers\Client\IndexController as ClientIndexController;
@@ -75,38 +75,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Routes pour la gestion des pharmaciens
     Route::prefix('pharmacists')
         ->name('pharmacists.')
+        ->middleware('can:viewAny,App\\Models\\User')
         ->group(function () {
-            // Liste des pharmaciens
+            // Liste des pharmaciens (Vue Inertia)
             Route::get('/', [PharmacistIndexController::class, '__invoke'])
                 ->name('index');
 
-            // Formulaire de création
-            Route::get('/create', [PharmacistCreateController::class, 'create'])
+            // Formulaire de création (Vue Inertia)
+            Route::get('/create', [PharmacistIndexController::class, 'create'])
                 ->name('create');
 
-            // Enregistrement d'un nouveau pharmacien
+            // Enregistrement d'un nouveau pharmacien (API)
             Route::post('/', [PharmacistCreateController::class, 'store'])
                 ->name('store');
 
-            // Affichage des détails d'un pharmacien
-            Route::get('/{pharmacist}', [PharmacistShowController::class, '__invoke'])
-                ->name('show');
 
-            // Formulaire d'édition d'un pharmacien
-            Route::get('/{pharmacist}/edit', [PharmacistEditController::class, 'edit'])
-                ->name('edit');
-
-            // Mise à jour d'un pharmacien
+            // Mise à jour d'un pharmacien (API)
             Route::put('/{pharmacist}', [PharmacistEditController::class, 'update'])
                 ->name('update');
 
-            // Suppression d'un pharmacien
+            // Suppression d'un pharmacien (API)
             Route::delete('/{pharmacist}', [PharmacistDeleteController::class, '__invoke'])
                 ->name('destroy');
-
-            // Activation/Désactivation d'un pharmacien
-            Route::get('/{pharmacist}/toggle-status', [PharmacistToggleStatusController::class, '__invoke'])
-                ->name('toggle-status');
         });
 
     // Routes pour les clients
