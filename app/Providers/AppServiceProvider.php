@@ -6,6 +6,9 @@ use Illuminate\Support\ServiceProvider;
 use App\Repositories\Contracts\PharmaceuticalProductRepositoryInterface;
 use App\Repositories\Eloquent\PharmaceuticalProductRepository;
 
+use App\Repositories\Contracts\CategoryRepositoryInterface;
+use App\Repositories\Eloquent\CategoryRepository;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -16,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             PharmaceuticalProductRepositoryInterface::class,
             PharmaceuticalProductRepository::class
+        );
+
+        $this->app->bind(
+            CategoryRepositoryInterface::class,
+            CategoryRepository::class
         );
     }
 
