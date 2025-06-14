@@ -9,6 +9,9 @@ use App\Repositories\Eloquent\PharmaceuticalProductRepository;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Repositories\Eloquent\CategoryRepository;
 
+use App\Repositories\Contracts\PharmacistRepositoryInterface;
+use App\Repositories\Eloquent\PharmacistRepository;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -24,6 +27,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             CategoryRepositoryInterface::class,
             CategoryRepository::class
+        );
+
+        $this->app->bind(
+            PharmacistRepositoryInterface::class,
+            PharmacistRepository::class
         );
     }
 

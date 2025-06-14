@@ -52,13 +52,13 @@ class CategoryRepository implements CategoryRepositoryInterface
 
     public function update(int $id, array $data): bool
     {
-        $product = $this->find($id);
-        return $product->update($data);
+        $category = $this->find($id);
+        return $category->update($data);
     }
 
     public function delete(int $id): bool
     {
-        $product = $this->find($id);
+        $category = $this->find($id);
         return $product->delete();
     }
 }
