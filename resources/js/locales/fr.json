@@ -9,6 +9,10 @@
             "en": "Anglais"
         }
     },
+    "products": {
+        "title": "Produits pharmaceutiques",
+        "welcome": "Bienvenue"
+    },
     "appearance": {
         "title": "Apparence",
         "settings": "Paramètres d'apparence",

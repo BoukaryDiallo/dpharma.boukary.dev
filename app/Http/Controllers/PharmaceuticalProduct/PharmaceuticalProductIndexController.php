@@ -14,11 +14,33 @@ class PharmaceuticalProductIndexController extends BaseController
      */
     public function __invoke(Request $request)
     {
-        $perPage = $request->input('per_page', 10);
-        
-        // Utilisation du repository avec chargement des relations
-        $products = $this->repository->paginate($perPage, ['category']);
-            
+        // Récupération de tous les produits avec la relation category
+        $products = $this->repository->all(['category'])->map(function($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'slug' => $product->slug,
+                'description' => $product->description,
+                'category_id' => $product->category_id,
+                'category' => $product->category ? [
+                    'id' => $product->category->id,
+                    'name' => $product->category->name
+                ] : null,
+                'form' => $product->form,
+                'dosage' => $product->dosage,
+                'price' => (float) $product->price,
+                'stock_quantity' => (int) $product->stock_quantity,
+                'expiration_date' => $product->expiration_date?->toDateString(),
+                'manufacturer' => $product->manufacturer,
+                'batch_number' => $product->batch_number,
+                'requires_prescription' => (bool) $product->requires_prescription,
+                'is_active' => (bool) $product->is_active,
+                'created_at' => $product->created_at?->toDateTimeString(),
+                'updated_at' => $product->updated_at?->toDateTimeString(),
+                'deleted_at' => $product->deleted_at?->toDateTimeString(),
+            ];
+        });
+
         // Récupération des catégories
         $categories = Category::select('id', 'name')
             ->orderBy('name')
@@ -31,9 +53,8 @@ class PharmaceuticalProductIndexController extends BaseController
             });
 
         return Inertia::render('PharmaceuticalProducts', [
-            'products' => $products,
-            'categories' => $categories->toArray(),
-            'filters' => $request->only(['search', 'per_page'])
+            'products' => $products->toArray(),
+            'categories' => $categories->toArray()
         ]);
     }
 }

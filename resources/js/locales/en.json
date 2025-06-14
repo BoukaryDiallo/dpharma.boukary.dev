@@ -9,6 +9,10 @@
             "en": "English"
         }
     },
+    "products": {
+        "title": "Products",
+        "welcome": "Welcome to"
+    },
     "appearance": {
         "title": "Appearance",
         "settings": "Appearance settings",
