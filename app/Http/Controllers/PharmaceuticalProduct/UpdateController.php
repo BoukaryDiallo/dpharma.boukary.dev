@@ -2,25 +2,60 @@
 
 namespace App\Http\Controllers\PharmaceuticalProduct;
 
+use App\Http\Controllers\Controller;
+use App\Repositories\Contracts\PharmaceuticalProductRepositoryInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
+use Inertia\Response;
 use Illuminate\Support\Str;
 
-class PharmaceuticalProductUpdateController extends BaseController
+class UpdateController extends Controller
 {
-    public function execute(Request $request, int $id)
-    {
-        $product = $this->repository->find($id);
+    /**
+     * @var PharmaceuticalProductRepositoryInterface
+     */
+    protected $productRepository;
 
+    /**
+     * @param PharmaceuticalProductRepositoryInterface $productRepository
+     */
+    public function __construct(PharmaceuticalProductRepositoryInterface $productRepository)
+    {
+        $this->productRepository = $productRepository;
+    }
+
+    /**
+     * Afficher le formulaire d'édition
+     * 
+     * @param int $id
+     * @return Response
+     */
+    public function edit(int $id): Response
+    {
+        $product = $this->productRepository->find($id);
+        
+        return Inertia::render('PharmaceuticalProducts/Edit', [
+            'product' => $product
+        ]);
+    }
+
+    /**
+     * Mettre à jour un produit pharmaceutique
+     * 
+     * @param Request $request
+     * @param int $id
+     * @return RedirectResponse
+     */
+    public function update(Request $request, int $id): RedirectResponse
+    {
         // Formater la date d'expiration si elle est présente
         if ($request->has('expiration_date')) {
             try {
                 $expirationDate = \Carbon\Carbon::parse($request->expiration_date)->format('Y-m-d');
                 $request->merge(['expiration_date' => $expirationDate]);
             } catch (\Exception $e) {
-
-
+                // Gérer l'erreur si nécessaire
             }
         }
 
@@ -31,33 +66,37 @@ class PharmaceuticalProductUpdateController extends BaseController
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
-            'expiration_date' => ['required', 'date', 'date_format:Y-m-d', 'after:today'],
+            'category_id' => 'required|exists:categories,id',
             'manufacturer' => 'required|string|max:255',
+            'expiration_date' => 'required|date|after:today',
             'batch_number' => 'required|string|max:100|unique:pharmaceutical_products,batch_number,' . $id,
             'requires_prescription' => 'boolean',
             'is_active' => 'boolean',
-            'category_id' => 'nullable|exists:categories,id',
         ]);
 
-        // Mise à jour du slug si le nom a changé
+        // Mettre à jour le slug si le nom a changé
+        $product = $this->productRepository->find($id);
         if ($product->name !== $validated['name']) {
             $validated['slug'] = Str::slug($validated['name']);
 
             // Vérification de l'unicité du slug
-            $count = 1;
             $originalSlug = $validated['slug'];
+            $count = 1;
             $tempSlug = $validated['slug'];
 
             // Vérifier si le slug existe déjà pour un autre produit
-            while ($this->repository->slugExists($tempSlug, $id)) {
+            while ($this->productRepository->slugExists($tempSlug, $id)) {
                 $tempSlug = $originalSlug . '-' . $count++;
             }
             $validated['slug'] = $tempSlug;
         }
 
-        $this->repository->update($id, $validated);
+        // Mettre à jour le produit via le repository
+        $this->productRepository->update($id, $validated);
 
-        return to_route('pharmaceutical-products.index');
+        return redirect()
+            ->route('pharmaceutical-products.index')
+            ->with('success', 'Produit pharmaceutique mis à jour avec succès.');
     }
 
     /**
