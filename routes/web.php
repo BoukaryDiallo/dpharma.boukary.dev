@@ -109,6 +109,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('/{client}', [\App\Http\Controllers\Client\ClientEditController::class, '__invoke'])->name('update');
             Route::delete('/{client}', [\App\Http\Controllers\Client\ClientDeleteController::class, '__invoke'])->name('destroy');
         });
+
+    // Sales CRUD
+    Route::prefix('sales')
+        ->name('sales.')
+        ->group(function () {
+            Route::get('/', [\App\Http\Controllers\Sale\SaleIndexController::class, '__invoke'])->name('index');
+            Route::post('/', [\App\Http\Controllers\Sale\SaleCreateController::class, '__invoke'])->name('store');
+            Route::put('/{sale}', [\App\Http\Controllers\Sale\SaleEditController::class, '__invoke'])->name('update');
+            Route::delete('/{sale}', [\App\Http\Controllers\Sale\SaleDeleteController::class, '__invoke'])->name('destroy');
+        });
 });
 
 require __DIR__.'/settings.php';

@@ -19,7 +19,7 @@ class PharmaceuticalProduct extends Model
         'composition',
         'form',
         'dosage',
-        'price',
+        'prix_unitaire',
         'stock_quantity',
         'expiration_date',
         'requires_prescription',
@@ -28,12 +28,18 @@ class PharmaceuticalProduct extends Model
     protected $casts = [
         'expiration_date' => 'date',
         'requires_prescription' => 'boolean',
-        'price' => 'decimal:2',
+        'prix_unitaire' => 'decimal:2',
     ];
 
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
-}
 
+    public function sales()
+    {
+        return $this->belongsToMany(Sale::class, 'sale_product', 'product_id', 'sale_id')
+            ->withPivot(['quantity', 'unit_price', 'total'])
+            ->withTimestamps();
+    }
+}

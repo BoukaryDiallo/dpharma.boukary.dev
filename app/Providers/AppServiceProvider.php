@@ -41,6 +41,11 @@ class AppServiceProvider extends ServiceProvider
             PharmacistRepositoryInterface::class,
             PharmacistRepository::class
         );
+
+        $this->app->bind(
+            \App\Repositories\Contracts\SaleRepositoryInterface::class,
+            \App\Repositories\Eloquent\SaleRepository::class
+        );
     }
 
     /**
