@@ -1,0 +1,65 @@
+services:
+  app:
+    image: laravelsail/php83-composer:latest
+    container_name: laravel-app
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./docker/sqlite:/var/www/sqlite
+    ports:
+      - "8000:8000"
+      - "5173:5173" # Vite
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: sqlite
+      QUEUE_CONNECTION: database
+      SESSION_DRIVER: database
+      REDIS_HOST: redis
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_MAILER: smtp
+      PHP_CLI_SERVER_WORKERS: 4
+    depends_on:
+      - redis
+      - mailhog
+    command: >
+      sh -c "php artisan migrate --force &&
+             php artisan serve --host=0.0.0.0 --port=8000"
+
+  redis:
+    image: redis:alpine
+    container_name: laravel-redis
+    ports:
+      - "6379:6379"
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: laravel-mailhog
+    ports:
+      - "8025:8025" # Web UI
+      - "1025:1025" # SMTP
+
+  queue:
+    image: laravelsail/php83-composer:latest
+    container_name: laravel-queue
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - app
+    command: php artisan queue:work --tries=3
+
+  scheduler:
+    image: laravelsail/php83-composer:latest
+    container_name: laravel-scheduler
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - app
+    command: sh -c "while [ true ]; do php artisan schedule:run --no-interaction & sleep 60; done"
+
+volumes:
+  sqlite:
