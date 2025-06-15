@@ -6,14 +6,7 @@ import { computed, ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { ArrowUpDown, Loader2, Pencil, Plus, Search, Trash2 } from 'lucide-vue-next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -33,19 +26,19 @@ interface Pharmacist {
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Tableau de bord',
-        href: '/dashboard'
+        href: '/dashboard',
     },
     {
         title: 'Pharmaciens',
-        href: '/pharmacists'
-    }
+        href: '/pharmacists',
+    },
 ];
 
 // Props
 const props = defineProps<{
     pharmacists: {
         data: Pharmacist[];
-    }
+    };
 }>();
 
 // États réactifs
@@ -65,7 +58,7 @@ const createForm = useForm({
     email: '',
     password: '',
     password_confirmation: '',
-    role: 'pharmacist'
+    role: 'pharmacist',
 });
 
 // Formulaire d'édition
@@ -74,7 +67,7 @@ const editForm = useForm({
     email: '',
     password: '',
     password_confirmation: '',
-    role: 'pharmacist'
+    role: 'pharmacist',
 });
 
 // Filtrage local des pharmaciens
@@ -83,21 +76,19 @@ const localPharmacists = computed(() => {
     // Recherche sur nom, email ou rôle
     if (searchQuery.value) {
         const q = searchQuery.value.toLowerCase();
-        filtered = filtered.filter(p =>
-            p.name.toLowerCase().includes(q) ||
-            p.email.toLowerCase().includes(q) ||
-            (p.role && p.role.toLowerCase().includes(q))
+        filtered = filtered.filter(
+            (p) => p.name.toLowerCase().includes(q) || p.email.toLowerCase().includes(q) || (p.role && p.role.toLowerCase().includes(q)),
         );
     }
     // Filtrage par rôle
     if (selectedRole.value) {
-        filtered = filtered.filter(p => p.role === selectedRole.value);
+        filtered = filtered.filter((p) => p.role === selectedRole.value);
     }
     // Tri local
     if (sortField.value) {
         filtered = [...filtered].sort((a, b) => {
-            let aValue = a[sortField.value];
-            let bValue = b[sortField.value];
+            let aValue = a[sortField.value as keyof Pharmacist];
+            let bValue = b[sortField.value as keyof Pharmacist];
             if (typeof aValue === 'string' && typeof bValue === 'string') {
                 aValue = aValue.toLowerCase();
                 bValue = bValue.toLowerCase();
@@ -144,7 +135,7 @@ const submitCreate = (): void => {
             //     title: 'Succès',
             //     description: 'Le pharmacien a été créé avec succès.'
             // });
-        }
+        },
     });
 };
 
@@ -159,7 +150,7 @@ const submitEdit = (): void => {
             //     title: 'Succès',
             //     description: 'Le pharmacien a été mis à jour avec succès.'
             // });
-        }
+        },
     });
 };
 
@@ -174,7 +165,7 @@ const confirmDelete = (): void => {
             //     title: 'Succès',
             //     description: 'Le pharmacien a été supprimé avec succès.'
             // });
-        }
+        },
     });
 };
 
@@ -191,16 +182,19 @@ const sort = (field: string): void => {
 
 // Mettre à jour l'URL avec les filtres actuels
 const updateUrl = (): void => {
-    router.get(route('pharmacists.index'), {
-        search: searchQuery.value,
-        role: selectedRole.value,
-        perPage: perPage.value,
-        sortField: sortField.value,
-        sortDirection: sortDirection.value
-    }, {
-        preserveState: true,
-        replace: true
-    });
+    router.get(
+        route('pharmacists.index'),
+        {
+            search: searchQuery.value,
+            role: selectedRole.value,
+            sortField: sortField.value,
+            sortDirection: sortDirection.value,
+        },
+        {
+            preserveState: true,
+            replace: true,
+        },
+    );
 };
 
 // Pagination locale supprimée
@@ -209,7 +203,7 @@ const updateUrl = (): void => {
 const roles = [
     { value: 'pharmacist', label: 'Pharmacien' },
     { value: 'manager', label: 'Gestionnaire' },
-    { value: 'admin', label: 'Administrateur' }
+    { value: 'admin', label: 'Administrateur' },
 ];
 
 // Formater la date
@@ -219,7 +213,7 @@ const formatDate = (dateString: string): string => {
         month: '2-digit',
         year: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
     });
 };
 </script>
@@ -241,13 +235,9 @@ const formatDate = (dateString: string): string => {
                 <CardHeader>
                     <div class="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
                         <div class="flex-1">
-                            <Input
-                                v-model="searchQuery"
-                                placeholder="Rechercher un pharmacien..."
-                                class="max-w-sm"
-                            >
+                            <Input v-model="searchQuery" placeholder="Rechercher un pharmacien..." class="max-w-sm">
                                 <template #prefix>
-                                    <Search class="h-4 w-4 text-muted-foreground" />
+                                    <Search class="text-muted-foreground h-4 w-4" />
                                 </template>
                             </Input>
                         </div>
@@ -284,12 +274,6 @@ const formatDate = (dateString: string): string => {
                                             <ArrowUpDown class="ml-2 h-4 w-4" />
                                         </div>
                                     </TableHead>
-                                    <TableHead class="cursor-pointer" @click="sort('created_at')">
-                                        <div class="flex items-center">
-                                            Date de création
-                                            <ArrowUpDown class="ml-2 h-4 w-4" />
-                                        </div>
-                                    </TableHead>
                                     <TableHead class="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -299,40 +283,27 @@ const formatDate = (dateString: string): string => {
                                     <TableCell>{{ pharmacist.email }}</TableCell>
                                     <TableCell>
                                         <Badge variant="outline">
-                                            {{ roles.find(r => r.value === pharmacist.role)?.label || pharmacist.role }}
+                                            {{ roles.find((r) => r.value === pharmacist.role)?.label || pharmacist.role }}
                                         </Badge>
                                     </TableCell>
                                     <TableCell>{{ formatDate(pharmacist.created_at) }}</TableCell>
                                     <TableCell class="text-right">
                                         <div class="flex justify-end space-x-2">
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                @click="openEdit(pharmacist)"
-                                                v-if="true"
-                                            >
+                                            <Button variant="ghost" size="sm" @click="openEdit(pharmacist)" v-if="true">
                                                 <Pencil class="h-4 w-4" />
                                             </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                @click="openDelete(pharmacist)"
-                                                v-if="true"
-                                            >
-                                                <Trash2 class="h-4 w-4 text-destructive" />
+                                            <Button variant="ghost" size="sm" @click="openDelete(pharmacist)" v-if="true">
+                                                <Trash2 class="text-destructive h-4 w-4" />
                                             </Button>
                                         </div>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow v-if="pharmacists.data.length === 0">
-                                    <TableCell colspan="5" class="text-center py-8 text-muted-foreground">
-                                        Aucun pharmacien trouvé
-                                    </TableCell>
+                                    <TableCell colspan="5" class="text-muted-foreground py-8 text-center"> Aucun pharmacien trouvé </TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
                     </div>
-
                 </CardContent>
             </Card>
         </div>
@@ -342,9 +313,7 @@ const formatDate = (dateString: string): string => {
             <DialogContent class="sm:max-w-[600px]">
                 <DialogHeader>
                     <DialogTitle>Nouveau pharmacien</DialogTitle>
-                    <DialogDescription>
-                        Remplissez les informations pour ajouter un nouveau pharmacien
-                    </DialogDescription>
+                    <DialogDescription> Remplissez les informations pour ajouter un nouveau pharmacien </DialogDescription>
                 </DialogHeader>
                 <form @submit.prevent="submitCreate">
                     <div class="grid gap-4 py-4">
@@ -356,7 +325,7 @@ const formatDate = (dateString: string): string => {
                                 placeholder="Nom complet"
                                 :class="{ 'border-destructive': createForm.errors.name }"
                             />
-                            <p v-if="createForm.errors.name" class="text-sm text-destructive">
+                            <p v-if="createForm.errors.name" class="text-destructive text-sm">
                                 {{ createForm.errors.name }}
                             </p>
                         </div>
@@ -369,7 +338,7 @@ const formatDate = (dateString: string): string => {
                                 placeholder="Email"
                                 :class="{ 'border-destructive': createForm.errors.email }"
                             />
-                            <p v-if="createForm.errors.email" class="text-sm text-destructive">
+                            <p v-if="createForm.errors.email" class="text-destructive text-sm">
                                 {{ createForm.errors.email }}
                             </p>
                         </div>
@@ -382,14 +351,12 @@ const formatDate = (dateString: string): string => {
                                 placeholder="Mot de passe"
                                 :class="{ 'border-destructive': createForm.errors.password }"
                             />
-                            <p v-if="createForm.errors.password" class="text-sm text-destructive">
+                            <p v-if="createForm.errors.password" class="text-destructive text-sm">
                                 {{ createForm.errors.password }}
                             </p>
                         </div>
                         <div class="grid gap-2">
-                            <label for="password_confirmation" class="text-sm font-medium">
-                                Confirmer le mot de passe
-                            </label>
+                            <label for="password_confirmation" class="text-sm font-medium"> Confirmer le mot de passe </label>
                             <Input
                                 id="password_confirmation"
                                 v-model="createForm.password_confirmation"
@@ -404,11 +371,7 @@ const formatDate = (dateString: string): string => {
                                     <SelectValue placeholder="Sélectionner un rôle" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem
-                                        v-for="role in roles"
-                                        :key="role.value"
-                                        :value="role.value"
-                                    >
+                                    <SelectItem v-for="role in roles" :key="role.value" :value="role.value">
                                         {{ role.label }}
                                     </SelectItem>
                                 </SelectContent>
@@ -416,9 +379,7 @@ const formatDate = (dateString: string): string => {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="button" variant="outline" @click="showCreate = false">
-                            Annuler
-                        </Button>
+                        <Button type="button" variant="outline" @click="showCreate = false"> Annuler </Button>
                         <Button type="submit" :disabled="createForm.processing">
                             <span v-if="createForm.processing" class="mr-2">
                                 <Loader2 class="h-4 w-4 animate-spin" />
@@ -435,9 +396,7 @@ const formatDate = (dateString: string): string => {
             <DialogContent class="sm:max-w-[600px]">
                 <DialogHeader>
                     <DialogTitle>Modifier le pharmacien</DialogTitle>
-                    <DialogDescription>
-                        Modifiez les informations du pharmacien
-                    </DialogDescription>
+                    <DialogDescription> Modifiez les informations du pharmacien </DialogDescription>
                 </DialogHeader>
                 <form @submit.prevent="submitEdit">
                     <div class="grid gap-4 py-4">
@@ -449,7 +408,7 @@ const formatDate = (dateString: string): string => {
                                 placeholder="Nom complet"
                                 :class="{ 'border-destructive': editForm.errors.name }"
                             />
-                            <p v-if="editForm.errors.name" class="text-sm text-destructive">
+                            <p v-if="editForm.errors.name" class="text-destructive text-sm">
                                 {{ editForm.errors.name }}
                             </p>
                         </div>
@@ -462,14 +421,12 @@ const formatDate = (dateString: string): string => {
                                 placeholder="Email"
                                 :class="{ 'border-destructive': editForm.errors.email }"
                             />
-                            <p v-if="editForm.errors.email" class="text-sm text-destructive">
+                            <p v-if="editForm.errors.email" class="text-destructive text-sm">
                                 {{ editForm.errors.email }}
                             </p>
                         </div>
                         <div class="grid gap-2">
-                            <label for="edit-password" class="text-sm font-medium">
-                                Nouveau mot de passe (laisser vide pour ne pas changer)
-                            </label>
+                            <label for="edit-password" class="text-sm font-medium"> Nouveau mot de passe (laisser vide pour ne pas changer) </label>
                             <Input
                                 id="edit-password"
                                 v-model="editForm.password"
@@ -477,14 +434,12 @@ const formatDate = (dateString: string): string => {
                                 placeholder="Nouveau mot de passe"
                                 :class="{ 'border-destructive': editForm.errors.password }"
                             />
-                            <p v-if="editForm.errors.password" class="text-sm text-destructive">
+                            <p v-if="editForm.errors.password" class="text-destructive text-sm">
                                 {{ editForm.errors.password }}
                             </p>
                         </div>
                         <div class="grid gap-2">
-                            <label for="edit-password_confirmation" class="text-sm font-medium">
-                                Confirmer le nouveau mot de passe
-                            </label>
+                            <label for="edit-password_confirmation" class="text-sm font-medium"> Confirmer le nouveau mot de passe </label>
                             <Input
                                 id="edit-password_confirmation"
                                 v-model="editForm.password_confirmation"
@@ -499,11 +454,7 @@ const formatDate = (dateString: string): string => {
                                     <SelectValue placeholder="Sélectionner un rôle" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem
-                                        v-for="role in roles"
-                                        :key="role.value"
-                                        :value="role.value"
-                                    >
+                                    <SelectItem v-for="role in roles" :key="role.value" :value="role.value">
                                         {{ role.label }}
                                     </SelectItem>
                                 </SelectContent>
@@ -511,9 +462,7 @@ const formatDate = (dateString: string): string => {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="button" variant="outline" @click="showEdit = false">
-                            Annuler
-                        </Button>
+                        <Button type="button" variant="outline" @click="showEdit = false"> Annuler </Button>
                         <Button type="submit" :disabled="editForm.processing">
                             <span v-if="editForm.processing" class="mr-2">
                                 <Loader2 class="h-4 w-4 animate-spin" />
@@ -532,26 +481,12 @@ const formatDate = (dateString: string): string => {
                     <DialogTitle>Confirmer la suppression</DialogTitle>
                     <DialogDescription>
                         Êtes-vous sûr de vouloir supprimer le pharmacien
-                        <span class="font-semibold">{{ current?.name }}</span> ?
-                        Cette action est irréversible.
+                        <span class="font-semibold">{{ current?.name }}</span> ? Cette action est irréversible.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        @click="showDelete = false"
-                    >
-                        Annuler
-                    </Button>
-                    <Button
-                        type="button"
-                        variant="destructive"
-                        @click="confirmDelete"
-
-                    >
-                        Supprimer
-                    </Button>
+                    <Button type="button" variant="outline" @click="showDelete = false"> Annuler </Button>
+                    <Button type="button" variant="destructive" @click="confirmDelete"> Supprimer </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

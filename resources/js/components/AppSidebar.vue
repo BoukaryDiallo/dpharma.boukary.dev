@@ -25,6 +25,11 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
+        title: 'Clients',
+        href: '/clients',
+        icon: LayoutGrid,
+    },
+    {
         title: 'Ventes',
         href: '/sales',
         icon: LayoutGrid,

@@ -103,37 +103,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('clients')
         ->name('clients.')
         ->group(function () {
-            // Liste des clients
-            Route::get('/', [ClientIndexController::class, '__invoke'])
-                ->name('index');
-
-            // Formulaire de création
-            Route::get('/create', [ClientCreateController::class, 'create'])
-                ->name('create');
-
-            // Enregistrement d'un nouveau client
-            Route::post('/', [ClientCreateController::class, 'store'])
-                ->name('store');
-
-            // Affichage des détails d'un client
-            Route::get('/{client}', [ClientShowController::class, '__invoke'])
-                ->name('show');
-
-            // Formulaire d'édition d'un client
-            Route::get('/{client}/edit', [ClientEditController::class, 'edit'])
-                ->name('edit');
-
-            // Mise à jour d'un client
-            Route::put('/{client}', [ClientEditController::class, 'update'])
-                ->name('update');
-
-            // Suppression d'un client
-            Route::delete('/{client}', [ClientDeleteController::class, '__invoke'])
-                ->name('destroy');
-
-            // Activation/Désactivation d'un client
-            Route::get('/{client}/toggle-status', [ClientToggleStatusController::class, '__invoke'])
-                ->name('toggle-status');
+            // Dedicated controllers for each action (all extend BaseController)
+            Route::get('/', [\App\Http\Controllers\Client\ClientIndexController::class, '__invoke'])->name('index');
+            Route::post('/', [\App\Http\Controllers\Client\ClientCreateController::class, '__invoke'])->name('store');
+            Route::put('/{client}', [\App\Http\Controllers\Client\ClientEditController::class, '__invoke'])->name('update');
+            Route::delete('/{client}', [\App\Http\Controllers\Client\ClientDeleteController::class, '__invoke'])->name('destroy');
         });
 });
 
