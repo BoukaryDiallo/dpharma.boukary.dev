@@ -3,7 +3,7 @@
 ## 📋 Description
 DPharma est une application web de gestion de pharmacie développée avec Laravel 12, Inertia.js et Vue.js. Elle permet de gérer les produits pharmaceutiques, les clients, les ventes et le personnel de la pharmacie de manière efficace et sécurisée.
 
-## 🚀 Fonctionnalités principales
+## Features principales
 
 ### Gestion des Produits Pharmaceutiques
 - Création, lecture, mise à jour et suppression (CRUD) des produits
@@ -33,7 +33,7 @@ DPharma est une application web de gestion de pharmacie développée avec Larave
 - Base de données (SQLite)
 - Serveur web (Nginx/Apache)
 
-## 🚀 Installation
+## Installation
 
 1. **Cloner le dépôt**
    ```bash
@@ -152,4 +152,4 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
 ## ✉️ Contact
 
-Pour toute question ou suggestion, veuillez contacter l'équipe de développement à [votre-email@example.com](mailto:votre-email@example.com).
+Pour toute question ou suggestion, veuillez me contacter à [hello@boukary.dev](mailto:hello@boukary.dev).
