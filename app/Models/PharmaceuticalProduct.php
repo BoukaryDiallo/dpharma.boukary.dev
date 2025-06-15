@@ -29,7 +29,18 @@ class PharmaceuticalProduct extends Model
         'expiration_date' => 'date',
         'requires_prescription' => 'boolean',
         'prix_unitaire' => 'decimal:2',
+        'stock_quantity' => 'integer',
     ];
+
+    // Accesseur pour compatibilité $product->stock
+    public function getStockAttribute()
+    {
+        return $this->stock_quantity;
+    }
+    public function setStockAttribute($value)
+    {
+        $this->stock_quantity = $value;
+    }
 
     public function category()
     {
