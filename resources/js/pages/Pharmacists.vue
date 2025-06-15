@@ -55,7 +55,7 @@ const showDelete = ref(false);
 const current = ref<Pharmacist | null>(null);
 const searchQuery = ref('');
 const selectedRole = ref('');
-const perPage = ref(10);
+// Pagination locale supprimée, affichage de tous les pharmaciens
 const sortField = ref('name');
 const sortDirection = ref('asc');
 
@@ -80,15 +80,32 @@ const editForm = useForm({
 // Filtrage local des pharmaciens
 const localPharmacists = computed(() => {
     let filtered = props.pharmacists.data;
+    // Recherche sur nom, email ou rôle
     if (searchQuery.value) {
         const q = searchQuery.value.toLowerCase();
         filtered = filtered.filter(p =>
             p.name.toLowerCase().includes(q) ||
-            p.email.toLowerCase().includes(q)
+            p.email.toLowerCase().includes(q) ||
+            (p.role && p.role.toLowerCase().includes(q))
         );
     }
+    // Filtrage par rôle
     if (selectedRole.value) {
         filtered = filtered.filter(p => p.role === selectedRole.value);
+    }
+    // Tri local
+    if (sortField.value) {
+        filtered = [...filtered].sort((a, b) => {
+            let aValue = a[sortField.value];
+            let bValue = b[sortField.value];
+            if (typeof aValue === 'string' && typeof bValue === 'string') {
+                aValue = aValue.toLowerCase();
+                bValue = bValue.toLowerCase();
+            }
+            if (aValue < bValue) return sortDirection.value === 'asc' ? -1 : 1;
+            if (aValue > bValue) return sortDirection.value === 'asc' ? 1 : -1;
+            return 0;
+        });
     }
     return filtered;
 });
@@ -186,8 +203,7 @@ const updateUrl = (): void => {
     });
 };
 
-// Watchers pour la pagination locale
-// (aucune requête backend n'est envoyée pour la recherche/filtrage)
+// Pagination locale supprimée
 
 // Rôles disponibles
 const roles = [
@@ -247,16 +263,6 @@ const formatDate = (dateString: string): string => {
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
-                            <Select v-model="perPage">
-                                <SelectTrigger class="w-[100px]">
-                                    <SelectValue :placeholder="`${perPage} / page`" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem :value="10">10 / page</SelectItem>
-                                    <SelectItem :value="25">25 / page</SelectItem>
-                                    <SelectItem :value="50">50 / page</SelectItem>
-                                </SelectContent>
-                            </Select>
                         </div>
                     </div>
                 </CardHeader>
@@ -288,7 +294,7 @@ const formatDate = (dateString: string): string => {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                <TableRow v-for="pharmacist in pharmacists.data" :key="pharmacist.id">
+                                <TableRow v-for="pharmacist in localPharmacists" :key="pharmacist.id">
                                     <TableCell class="font-medium">{{ pharmacist.name }}</TableCell>
                                     <TableCell>{{ pharmacist.email }}</TableCell>
                                     <TableCell>
