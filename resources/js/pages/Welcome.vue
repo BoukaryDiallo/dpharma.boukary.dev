@@ -1,5 +1,5 @@
 <template>
-    <Head title="PharmaCare - Gestion de Pharmacie">
+    <Head title="Dpharma - Gestion de Pharmacie">
         <link rel="preconnect" href="https://rsms.me/" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     </Head>
