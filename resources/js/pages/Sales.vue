@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { ArrowUpDown, Loader2, Minus, Pencil, Plus, Search, Trash2, ExternalLink } from 'lucide-vue-next';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { Button } from '@/components/ui/button';
-import { ArrowUpDown, Loader2, Minus, Pencil, Plus, Search, Trash2 } from 'lucide-vue-next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
     Dialog,
@@ -83,6 +83,8 @@ const props = defineProps<{
 const showCreate = ref(false);
 const showEdit = ref(false);
 const showDelete = ref(false);
+const showClientSalesModal = ref(false);
+const selectedClientId = ref<number | null>(null);
 const current = ref<Sale | null>(null);
 const searchQuery = ref('');
 const sortField = ref('date_vente');
@@ -106,6 +108,12 @@ const editForm = useForm({
     ],
     montant_total: 0,
     date_vente: ''
+});
+
+// Ventes d'un client sélectionné
+const clientSales = computed(() => {
+    if (!selectedClientId.value) return [];
+    return props.sales.data.filter(sale => sale.client_id === selectedClientId.value);
 });
 
 // Filtrage local des ventes
@@ -283,6 +291,11 @@ function removeProductLine(form: any, idx: number) {
     if (form.products.length > 1) form.products.splice(idx, 1);
 }
 
+function openClientSalesModal(clientId: number) {
+    selectedClientId.value = clientId;
+    showClientSalesModal.value = true;
+}
+
 </script>
 
 <template>
@@ -344,7 +357,13 @@ function removeProductLine(form: any, idx: number) {
                             </TableHeader>
                             <TableBody>
                                 <TableRow v-for="sale in localSales" :key="sale.id">
-                                    <TableCell class="font-medium">{{ sale.client?.nom }}</TableCell>
+                                    <TableCell class="font-medium flex items-center justify-between gap-2">
+    <span>{{ sale.client?.nom }}</span>
+    <Button variant="ghost" size="icon"
+            @click="openClientSalesModal(sale.client_id)">
+        <ExternalLink class="h-4 w-4 text-muted-foreground hover:text-primary" />
+    </Button>
+</TableCell>
                                     <TableCell>{{ sale.montant_total }}</TableCell>
                                     <TableCell>{{ formatDate(sale.date_vente) }}</TableCell>
                                     <TableCell>{{ sale.user?.name }}</TableCell>
@@ -368,6 +387,46 @@ function removeProductLine(form: any, idx: number) {
                         </Table>
                     </div>
                 </CardContent>
+
+                <!-- Modal ventes client -->
+                <Dialog :open="showClientSalesModal" @update:open="(val) => (showClientSalesModal = val)">
+                    <DialogContent class="sm:max-w-[700px]">
+                        <DialogHeader>
+                            <DialogTitle>Ventes du client</DialogTitle>
+                            <DialogDescription>
+                                Liste des ventes pour le client sélectionné
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div v-if="clientSales.length">
+                            <table class="w-full text-sm border rounded">
+                                <thead>
+                                <tr class="bg-muted">
+                                    <th class="p-2">Date</th>
+                                    <th class="p-2">Montant</th>
+                                    <th class="p-2">Produits</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="sale in clientSales" :key="sale.id">
+                                    <td class="p-2">{{ formatDate(sale.date_vente) }}</td>
+                                    <td class="p-2">
+                                        {{ sale.montant_total.toLocaleString('fr-FR', { minimumFractionDigits: 2 }) }} F
+                                        CFA
+                                    </td>
+                                    <td class="p-2">
+                                        <ul>
+                                            <li v-for="prod in sale.products" :key="prod.id">
+                                                {{ prod.name }} ({{ prod.pivot.quantity }})
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div v-else class="text-muted-foreground">Aucune vente pour ce client.</div>
+                    </DialogContent>
+                </Dialog>
             </Card>
         </div>
 
