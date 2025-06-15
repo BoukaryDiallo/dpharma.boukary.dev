@@ -9,7 +9,7 @@ class SaleRepository implements SaleRepositoryInterface
 {
     public function all()
     {
-        return Sale::with(['client', 'user'])->orderByDesc('date_vente')->get();
+        return Sale::with(['client', 'user', 'products'])->orderByDesc('date_vente')->get();
     }
 
     public function find($id)

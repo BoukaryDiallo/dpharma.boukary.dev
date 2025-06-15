@@ -21,12 +21,20 @@ import { PharmaceuticalProduct } from '@/types/models';
 // Définition des types
 interface Client {
     id: number;
-    name: string;
+    nom: string;
 }
 
 interface User {
     id: number;
     name: string;
+}
+
+interface ProductWithPivot extends PharmaceuticalProduct {
+    pivot: {
+        quantity: number;
+        unit_price: number;
+        total: number;
+    };
 }
 
 interface Sale {
@@ -39,6 +47,10 @@ interface Sale {
     updated_at: string;
     client: Client;
     user: User;
+}
+
+interface SaleWithProducts extends Sale {
+    products: ProductWithPivot[];
 }
 
 // Configuration des fil d'ariane
@@ -56,7 +68,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 // Props
 const props = defineProps<{
     sales: {
-        data: Sale[];
+        data: SaleWithProducts[];
     };
     clients: {
         data: Client[];
@@ -104,7 +116,7 @@ const localSales = computed(() => {
         const q = searchQuery.value.toLowerCase();
         filtered = filtered.filter(
             (s) =>
-                s.client?.name?.toLowerCase().includes(q) ||
+                s.client?.nom?.toLowerCase().includes(q) ||
                 s.user?.name?.toLowerCase().includes(q) ||
                 String(s.montant_total).includes(q) ||
                 (s.date_vente && s.date_vente.toLowerCase().includes(q))
@@ -117,8 +129,8 @@ const localSales = computed(() => {
             let bValue: any;
             switch (sortField.value) {
                 case 'client':
-                    aValue = a.client?.name || '';
-                    bValue = b.client?.name || '';
+                    aValue = a.client?.nom || '';
+                    bValue = b.client?.nom || '';
                     break;
                 case 'user':
                     aValue = a.user?.name || '';
@@ -149,10 +161,10 @@ const openCreate = (): void => {
 };
 
 // Ouvrir le modal d'édition
-const openEdit = (sale: Sale): void => {
+const openEdit = (sale: SaleWithProducts): void => {
     current.value = sale;
     editForm.client_id = String(sale.client_id);
-    editForm.products = sale.products?.map((p: any) => ({
+    editForm.products = sale.products?.map((p) => ({
         product_id: String(p.id),
         quantity: p.pivot?.quantity || 1
     })) || [{ product_id: '', quantity: 1 }];
@@ -194,8 +206,12 @@ const submitEdit = (): void => {
     if (!current.value) return;
     editProductErrors.value = [];
     let hasError = false;
+
+    console.log(editForm.products);
+
     editForm.products.forEach((item, idx) => {
         if (!item.product_id || !item.quantity || item.quantity < 1) {
+            console.log(item);
             editProductErrors.value.push(`Ligne ${idx + 1} : produit ou quantité manquante/invalide.`);
             hasError = true;
         }
@@ -328,7 +344,7 @@ function removeProductLine(form: any, idx: number) {
                             </TableHeader>
                             <TableBody>
                                 <TableRow v-for="sale in localSales" :key="sale.id">
-                                    <TableCell class="font-medium">{{ sale.client?.name }}</TableCell>
+                                    <TableCell class="font-medium">{{ sale.client?.nom }}</TableCell>
                                     <TableCell>{{ sale.montant_total }}</TableCell>
                                     <TableCell>{{ formatDate(sale.date_vente) }}</TableCell>
                                     <TableCell>{{ sale.user?.name }}</TableCell>
@@ -376,7 +392,7 @@ function removeProductLine(form: any, idx: number) {
                                         :class="{ 'border-destructive': createForm.errors.client_id }" required>
                                     <option value="" disabled>Sélectionner un client</option>
                                     <option v-for="client in props.clients.data" :key="client.id" :value="client.id">
-                                        {{ client.name }}
+                                        {{ client.nom }}
                                     </option>
                                 </select>
                                 <p v-if="createForm.errors.client_id" class="text-destructive text-sm">
@@ -482,7 +498,7 @@ function removeProductLine(form: any, idx: number) {
                                     class="input w-full border rounded p-2" required>
                                 <option value="" disabled>Sélectionner un client</option>
                                 <option v-for="client in props.clients.data" :key="client.id" :value="client.id">
-                                    {{ client.name }}
+                                    {{ client.nom }}
                                 </option>
                             </select>
                             <p v-if="editForm.errors.client_id" class="text-destructive text-sm">
@@ -581,7 +597,7 @@ function removeProductLine(form: any, idx: number) {
                 <DialogHeader>
                     <DialogDescription>
                         Êtes-vous sûr de vouloir supprimer la vente
-                        <span class="font-semibold">{{ current?.client?.name }}</span> ? Cette action est irréversible.
+                        <span class="font-semibold">{{ current?.client?.nom }}</span> ? Cette action est irréversible.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>

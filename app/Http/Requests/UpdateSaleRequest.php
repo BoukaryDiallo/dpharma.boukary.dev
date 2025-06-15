@@ -17,7 +17,7 @@ class UpdateSaleRequest extends FormRequest
             'client_id' => ['required', 'exists:clients,id'],
             'products' => ['required', 'array', 'min:1'],
             'products.*.product_id' => ['required', 'exists:pharmaceutical_products,id'],
-            'products.*.quantite' => ['required', 'integer', 'min:1'],
+            'products.*.quantity' => ['required', 'integer', 'min:1'],
             'date_vente' => ['nullable', 'date'],
         ];
     }
