@@ -19,17 +19,19 @@ class PharmaceuticalProduct extends Model
         'composition',
         'form',
         'dosage',
-        'prix_unitaire',
+        'price',
         'stock_quantity',
         'expiration_date',
         'requires_prescription',
+        'is_active',
     ];
 
     protected $casts = [
         'expiration_date' => 'date',
         'requires_prescription' => 'boolean',
-        'prix_unitaire' => 'decimal:2',
+        'price' => 'decimal:2',
         'stock_quantity' => 'integer',
+        'is_active' => 'boolean',
     ];
 
     // Accesseur pour compatibilité $product->stock

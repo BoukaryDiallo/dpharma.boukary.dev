@@ -263,7 +263,7 @@ const form = useForm({
     form: props.modelValue?.form || 'tablet',
     dosage: props.modelValue?.dosage || '',
     description: props.modelValue?.description || '',
-    price: props.modelValue?.price || 0,
+    price: props.modelValue?.price ? Number(props.modelValue.price) : 0,
     stock_quantity: props.modelValue?.stock_quantity || 0,
     manufacturer: props.modelValue?.manufacturer || '',
     batch_number: props.modelValue?.batch_number || '',
@@ -275,6 +275,9 @@ const form = useForm({
 
 const submit = async () => {
     try {
+        // S'assurer que le prix est un nombre valide
+        form.price = form.price ? Number(form.price) : 0;
+        
         if (props.mode === 'create') {
             form.post(route('pharmaceutical-products.store'), {
                 onSuccess: () => {
