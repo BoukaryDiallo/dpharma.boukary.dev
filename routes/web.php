@@ -73,7 +73,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Routes pour la gestion des pharmaciens
     Route::prefix('pharmacists')
         ->name('pharmacists.')
-        ->middleware('can:viewAny,App\\Models\\User')
+//         ->middleware('can:viewAny,App\\Models\\User')
         ->group(function () {
             // Liste des pharmaciens (Vue Inertia)
             Route::get('/', [PharmacistIndexController::class, '__invoke'])

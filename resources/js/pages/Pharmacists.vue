@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head, router, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { Button } from '@/components/ui/button';
+import { toast } from 'vue-sonner';
 import { ArrowUpDown, Loader2, Pencil, Plus, Search, Trash2 } from 'lucide-vue-next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -22,16 +30,22 @@ interface Pharmacist {
     updated_at: string;
 }
 
+// Récupérer l'utilisateur connecté
+const { auth } = usePage().props;
+
+// Vérifier si l'utilisateur est administrateur
+const isAdmin = computed(() => auth.user?.role === 'admin');
+
 // Configuration des fil d'ariane
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Tableau de bord',
-        href: '/dashboard',
+        href: '/dashboard'
     },
     {
         title: 'Pharmaciens',
-        href: '/pharmacists',
-    },
+        href: '/pharmacists'
+    }
 ];
 
 // Props
@@ -45,6 +59,7 @@ const props = defineProps<{
 const showCreate = ref(false);
 const showEdit = ref(false);
 const showDelete = ref(false);
+const showRole = ref(false);
 const current = ref<Pharmacist | null>(null);
 const searchQuery = ref('');
 const selectedRole = ref('');
@@ -58,7 +73,7 @@ const createForm = useForm({
     email: '',
     password: '',
     password_confirmation: '',
-    role: 'pharmacist',
+    role: 'pharmacist'
 });
 
 // Formulaire d'édition
@@ -67,7 +82,7 @@ const editForm = useForm({
     email: '',
     password: '',
     password_confirmation: '',
-    role: 'pharmacist',
+    role: 'pharmacist'
 });
 
 // Filtrage local des pharmaciens
@@ -77,7 +92,7 @@ const localPharmacists = computed(() => {
     if (searchQuery.value) {
         const q = searchQuery.value.toLowerCase();
         filtered = filtered.filter(
-            (p) => p.name.toLowerCase().includes(q) || p.email.toLowerCase().includes(q) || (p.role && p.role.toLowerCase().includes(q)),
+            (p) => p.name.toLowerCase().includes(q) || p.email.toLowerCase().includes(q) || (p.role && p.role.toLowerCase().includes(q))
         );
     }
     // Filtrage par rôle
@@ -110,17 +125,35 @@ const openCreate = (): void => {
 
 // Ouvrir le modal d'édition
 const openEdit = (pharmacist: Pharmacist): void => {
+    if (!isAdmin.value) {
+        toast({
+            title: 'Accès refusé',
+            description: 'Vous devez être administrateur pour modifier un pharmacien.',
+            variant: 'destructive'
+        });
+        showRole.value = true;
+        return;
+    }
+
     current.value = pharmacist;
     editForm.name = pharmacist.name;
     editForm.email = pharmacist.email;
     editForm.role = pharmacist.role;
-    editForm.password = '';
-    editForm.password_confirmation = '';
     showEdit.value = true;
 };
 
 // Ouvrir le modal de suppression
 const openDelete = (pharmacist: Pharmacist): void => {
+    if (!isAdmin.value) {
+        toast({
+            title: 'Accès refusé',
+            description: 'Vous devez être administrateur pour supprimer un pharmacien.',
+            variant: 'destructive'
+        });
+        showRole.value = true;
+        return;
+    }
+
     current.value = pharmacist;
     showDelete.value = true;
 };
@@ -135,7 +168,7 @@ const submitCreate = (): void => {
             //     title: 'Succès',
             //     description: 'Le pharmacien a été créé avec succès.'
             // });
-        },
+        }
     });
 };
 
@@ -150,7 +183,7 @@ const submitEdit = (): void => {
             //     title: 'Succès',
             //     description: 'Le pharmacien a été mis à jour avec succès.'
             // });
-        },
+        }
     });
 };
 
@@ -165,7 +198,7 @@ const confirmDelete = (): void => {
             //     title: 'Succès',
             //     description: 'Le pharmacien a été supprimé avec succès.'
             // });
-        },
+        }
     });
 };
 
@@ -188,12 +221,12 @@ const updateUrl = (): void => {
             search: searchQuery.value,
             role: selectedRole.value,
             sortField: sortField.value,
-            sortDirection: sortDirection.value,
+            sortDirection: sortDirection.value
         },
         {
             preserveState: true,
-            replace: true,
-        },
+            replace: true
+        }
     );
 };
 
@@ -203,7 +236,7 @@ const updateUrl = (): void => {
 const roles = [
     { value: 'pharmacist', label: 'Pharmacien' },
     { value: 'manager', label: 'Gestionnaire' },
-    { value: 'admin', label: 'Administrateur' },
+    { value: 'admin', label: 'Administrateur' }
 ];
 
 // Formater la date
@@ -213,7 +246,7 @@ const formatDate = (dateString: string): string => {
         month: '2-digit',
         year: 'numeric',
         hour: '2-digit',
-        minute: '2-digit',
+        minute: '2-digit'
     });
 };
 </script>
@@ -283,7 +316,8 @@ const formatDate = (dateString: string): string => {
                                     <TableCell>{{ pharmacist.email }}</TableCell>
                                     <TableCell>
                                         <Badge variant="outline">
-                                            {{ roles.find((r) => r.value === pharmacist.role)?.label || pharmacist.role }}
+                                            {{ roles.find((r) => r.value === pharmacist.role)?.label || pharmacist.role
+                                            }}
                                         </Badge>
                                     </TableCell>
                                     <TableCell>{{ formatDate(pharmacist.created_at) }}</TableCell>
@@ -292,14 +326,17 @@ const formatDate = (dateString: string): string => {
                                             <Button variant="ghost" size="sm" @click="openEdit(pharmacist)" v-if="true">
                                                 <Pencil class="h-4 w-4" />
                                             </Button>
-                                            <Button variant="ghost" size="sm" @click="openDelete(pharmacist)" v-if="true">
+                                            <Button variant="ghost" size="sm" @click="openDelete(pharmacist)"
+                                                    v-if="true">
                                                 <Trash2 class="text-destructive h-4 w-4" />
                                             </Button>
                                         </div>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow v-if="pharmacists.data.length === 0">
-                                    <TableCell colspan="5" class="text-muted-foreground py-8 text-center"> Aucun pharmacien trouvé </TableCell>
+                                    <TableCell colspan="5" class="text-muted-foreground py-8 text-center"> Aucun
+                                        pharmacien trouvé
+                                    </TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
@@ -313,7 +350,8 @@ const formatDate = (dateString: string): string => {
             <DialogContent class="sm:max-w-[600px]">
                 <DialogHeader>
                     <DialogTitle>Nouveau pharmacien</DialogTitle>
-                    <DialogDescription> Remplissez les informations pour ajouter un nouveau pharmacien </DialogDescription>
+                    <DialogDescription> Remplissez les informations pour ajouter un nouveau pharmacien
+                    </DialogDescription>
                 </DialogHeader>
                 <form @submit.prevent="submitCreate">
                     <div class="grid gap-4 py-4">
@@ -356,7 +394,8 @@ const formatDate = (dateString: string): string => {
                             </p>
                         </div>
                         <div class="grid gap-2">
-                            <label for="password_confirmation" class="text-sm font-medium"> Confirmer le mot de passe </label>
+                            <label for="password_confirmation" class="text-sm font-medium"> Confirmer le mot de
+                                passe </label>
                             <Input
                                 id="password_confirmation"
                                 v-model="createForm.password_confirmation"
@@ -379,7 +418,7 @@ const formatDate = (dateString: string): string => {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="button" variant="outline" @click="showCreate = false"> Annuler </Button>
+                        <Button type="button" variant="outline" @click="showCreate = false"> Annuler</Button>
                         <Button type="submit" :disabled="createForm.processing">
                             <span v-if="createForm.processing" class="mr-2">
                                 <Loader2 class="h-4 w-4 animate-spin" />
@@ -396,7 +435,7 @@ const formatDate = (dateString: string): string => {
             <DialogContent class="sm:max-w-[600px]">
                 <DialogHeader>
                     <DialogTitle>Modifier le pharmacien</DialogTitle>
-                    <DialogDescription> Modifiez les informations du pharmacien </DialogDescription>
+                    <DialogDescription> Modifiez les informations du pharmacien</DialogDescription>
                 </DialogHeader>
                 <form @submit.prevent="submitEdit">
                     <div class="grid gap-4 py-4">
@@ -426,7 +465,8 @@ const formatDate = (dateString: string): string => {
                             </p>
                         </div>
                         <div class="grid gap-2">
-                            <label for="edit-password" class="text-sm font-medium"> Nouveau mot de passe (laisser vide pour ne pas changer) </label>
+                            <label for="edit-password" class="text-sm font-medium"> Nouveau mot de passe (laisser vide
+                                pour ne pas changer) </label>
                             <Input
                                 id="edit-password"
                                 v-model="editForm.password"
@@ -439,7 +479,8 @@ const formatDate = (dateString: string): string => {
                             </p>
                         </div>
                         <div class="grid gap-2">
-                            <label for="edit-password_confirmation" class="text-sm font-medium"> Confirmer le nouveau mot de passe </label>
+                            <label for="edit-password_confirmation" class="text-sm font-medium"> Confirmer le nouveau
+                                mot de passe </label>
                             <Input
                                 id="edit-password_confirmation"
                                 v-model="editForm.password_confirmation"
@@ -462,7 +503,7 @@ const formatDate = (dateString: string): string => {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="button" variant="outline" @click="showEdit = false"> Annuler </Button>
+                        <Button type="button" variant="outline" @click="showEdit = false"> Annuler</Button>
                         <Button type="submit" :disabled="editForm.processing">
                             <span v-if="editForm.processing" class="mr-2">
                                 <Loader2 class="h-4 w-4 animate-spin" />
@@ -485,8 +526,23 @@ const formatDate = (dateString: string): string => {
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                    <Button type="button" variant="outline" @click="showDelete = false"> Annuler </Button>
-                    <Button type="button" variant="destructive" @click="confirmDelete"> Supprimer </Button>
+                    <Button type="button" variant="outline" @click="showDelete = false"> Annuler</Button>
+                    <Button type="button" variant="destructive" @click="confirmDelete"> Supprimer</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
+        <!-- Modal de non accès -->
+        <Dialog :open="showRole" @update:open="(val) => (showRole = val)">
+            <DialogContent class="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Accès refusé</DialogTitle>
+                    <DialogDescription>
+                        Vous devez être administrateur pour modifier ou supprimer un pharmacien.
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <Button type="button" variant="outline" @click="showRole = false"> Ok</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
