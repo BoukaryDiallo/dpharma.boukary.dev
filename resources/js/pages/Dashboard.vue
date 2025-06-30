@@ -285,7 +285,7 @@
 </template>
 
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 import MetricCard from '@/components/dashboard/MetricCard.vue';
 import AlertCard from '@/components/dashboard/AlertCard.vue';
@@ -366,7 +366,7 @@ const modalType = ref<'lowStock' | 'expiring'>('lowStock');
 
 function openModal(type: 'lowStock' | 'expiring') {
     router.visit('/pharmaceutical-products');
-    
+
     modalType.value = type;
     showModal.value = true;
 }
@@ -383,15 +383,15 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 // Formatage compact pour mobile
 const formatCurrencyCompact = (amount: number): string => {
-    if (amount >= 1000000) {
-        return `${(amount / 1000000).toFixed(1)}M F CFA`;
-    } else if (amount >= 1000) {
-        return `${(amount / 1000).toFixed(0)}k F CFA`;
-    }
+    // if (amount >= 1000000) {
+    //     return `${(amount / 1000000).toFixed(1)}M F`;
+    // } else if (amount >= 1000) {
+    //     return `${(amount / 1000).toFixed(0)}k F`;
+    // }
     return amount.toLocaleString('fr-FR', {
         minimumFractionDigits: 0,
         maximumFractionDigits: 0
-    }) + ' F CFA';
+    }) + ' F';
 };
 
 const formatDateCompact = (dateString: string): string => {

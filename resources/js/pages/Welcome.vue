@@ -125,7 +125,7 @@
                         </div>
                         <div class="mt-4">
                             <a
-                                href="https://github.com/BoubakarPI/dpharma.boukary.dev"
+                                href="https://github.com/BoukaryDiallo/dpharma.boukary.dev"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="inline-flex items-center text-sm text-[#706f6c] hover:text-[#1b1b18] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"

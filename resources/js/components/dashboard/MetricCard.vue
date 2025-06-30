@@ -6,7 +6,7 @@
                 <p class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 truncate">
                     {{ title }}
                 </p>
-                <p class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1 leading-tight">
+                <p class="text-lg sm:text-xl lg:text-xl font-bold text-gray-900 dark:text-white mt-0.5 sm:mt-1 leading-tight">
                     {{ formattedValue }}
                 </p>
                 <div v-if="trend" class="flex items-center mt-1 sm:mt-2">
@@ -26,12 +26,6 @@
                     >
             {{ trend.value }}%
           </span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400 ml-1 hidden sm:inline">
-            vs mois dernier
-          </span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400 ml-1 sm:hidden">
-            vs M-1
-          </span>
                 </div>
             </div>
             <div class="flex-shrink-0 ml-2 sm:ml-3 lg:ml-4">
@@ -41,7 +35,7 @@
         ]">
                     <component
                         :is="iconComponent"
-                        class="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white"
+                        class="h-4 w-4 sm:h-5 sm:w-5 lg:h-4 lg:w-4 text-white"
                     />
                 </div>
             </div>

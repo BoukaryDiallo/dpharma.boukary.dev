@@ -37,7 +37,7 @@ DPharma est une application web de gestion de pharmacie développée avec Larave
 
 1. **Cloner le dépôt**
    ```bash
-   git clone https://github.com/BoubakarPI/dpharma.boukary.dev.git
+   git clone https://github.com/BoukaryDiallo/dpharma.boukary.dev.git
    cd dpharma.boukary.dev
    ```
 
